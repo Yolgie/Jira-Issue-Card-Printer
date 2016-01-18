@@ -3,7 +3,7 @@
   // Jira: https://connect.atlassian.net/browse/NERDS-33286
   // PivotTracker: https://www.pivotaltracker.com/n/projects/510733
   // Trello: https://trello.com/b/8zlPSh70/spike
-  // YouTrack: http://qoomon.myjetbrains.com/youtrack/dashboard
+  // YouTrack: http://mrst.myjetbrains.com/youtrack/dashboard
 
   var global = {};
   global.version = "4.4.0";
