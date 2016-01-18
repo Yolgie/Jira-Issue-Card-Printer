@@ -53,21 +53,6 @@ body {
   top: 0rem;
   left: 100%;
 }
-.author {
-  color: DIMGREY;
-  position: relative;
-  top: 0.2rem;
-  left: calc(50% - 2rem);
-  font-size: 0.8rem;
-  overflow: visible;
-  line-height: 0.38rem;
-}
-.author > span:nth-of-type(2) {
-  position: relative;
-  top: 0.1rem;
-  left: 0.65rem;
-  font-size: 0.5em;
-}
 .card {
   position: relative;
   float: left;
@@ -141,7 +126,7 @@ body {
 }
 .issue-id {
   position: absolute;
-  left: 1rem;
+  left: 2rem;
   top: 1.2rem;
   height: 1.5rem;
   max-width: calc(100% - 7.5rem);
@@ -238,7 +223,7 @@ body {
 }
 .issue-attachment {
   position: absolute;
-  left: 2.5rem;
+  left: 0rem;
   top: 0rem;
   width: 2.0rem;
   height: 2.0rem;
@@ -275,13 +260,13 @@ body {
   width: auto;
   min-width: 2rem;
   width: auto;
-  max-width: calc(100% - 7.5rem);
+  max-width: calc(100% - 6rem);
   height: auto;
   max-height: 2.2rem;
   padding-top: 0.1rem;
   padding-bottom: 0.2rem;
   padding-left: 0.3rem;
-  padding-right: 0.3rem;
+  padding-right: 0.2rem;
   text-align: left;
   font-size: 0.5rem;
   line-height: 0.55rem;

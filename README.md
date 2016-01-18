@@ -11,14 +11,14 @@ Bengt
 
 ### Installation
 #### Drag'n'Drop
-got to [Instalation Site](https://qoomon.github.io/Jira-Issue-Card-Printer/bookmarkInstalation.html)
+got to [Instalation Site](https://mrst.github.io/Jira-Issue-Card-Printer/bookmarkInstalation.html)
 
 *or*
 
 #### Manually
 Create Bookmark with folowing content.
 ```
-javascript:(function(){ var script = document.createElement("script"); script.src = "https://qoomon.github.io/Jira-Issue-Card-Printer/bookmarklet.js"; document.body.appendChild(script); document.body.removeChild(script);})();
+javascript:(function(){ var script = document.createElement("script"); script.src = "https://mrst.github.io/Jira-Issue-Card-Printer/bookmarklet.js"; document.body.appendChild(script); document.body.removeChild(script);})();
 ```
 
 ### Usage
@@ -43,7 +43,3 @@ search for issues und select *List View*
 * **PivotTracker**
 * **YouTrack**
 
-###Info
-I make use of **Google Analytics** to get some usage feedback. Please let me.
-I will only track the **pageview** and the **amount of rendered cards**
-**I do and will not track anything else**
