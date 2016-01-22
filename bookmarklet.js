@@ -149,7 +149,7 @@
     writeCookie("card_printer_hide_description", settings.hideDescription);
     writeCookie("card_printer_hide_assignee", settings.hideAssignee);
     writeCookie("card_printer_hide_due_date", settings.hideDueDate);
-    writeCookie("card_printer_hide_qr_code", settings.hideQrCode);
+    writeCookie("card_printer_hide_priority_flag", settings.hideQrCode);
   }
 
   function loadSettings(){
@@ -162,7 +162,7 @@
     settings.hideDescription = parseBool(readCookie("card_printer_hide_description"), false);
     settings.hideAssignee = parseBool(readCookie("card_printer_hide_assignee"), false);
     settings.hideDueDate = parseBool(readCookie("card_printer_hide_due_date"), false);
-    settings.hideQrCode = parseBool(readCookie("card_printer_hide_qr_code"), false);
+    settings.hideQrCode = parseBool(readCookie("card_printer_hide_priority_flag"), false);
   }
 
   function print() {
@@ -198,7 +198,7 @@
     $("#description-checkbox", appFrameDocument).attr('checked', !settings.hideDescription );
     $("#assignee-checkbox", appFrameDocument).attr('checked', !settings.hideAssignee );
     $("#due-date-checkbox", appFrameDocument).attr('checked', !settings.hideDueDate );
-    $("#qr-code-checkbox", appFrameDocument).attr('checked', !settings.hideQrCode );
+    $("#priority-flag-checkbox", appFrameDocument).attr('checked', !settings.hidePriorityFlag );
   }
 
   function renderCards(issueKeyList) {
@@ -299,9 +299,11 @@
       card.find(".issue-epic-box").remove();
     }
 
-    //QR-Code
-    var qrCodeUrl = 'https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=L|1&chl=' + encodeURIComponent(data.url);
-    card.find(".issue-qr-code").css("background-image", "url('" + qrCodeUrl + "')");
+    
+    //Priority-Flag
+    var priorityFlagUrl = data.fields.priority.iconUrl;
+    card.find(".issue-priority-flag").css("background-image", "url('" + priorityFlagUrl + "')");
+
   }
 
   function styleCards() {
@@ -315,7 +317,7 @@
     // hide/show assignee
     $(".issue-due-box", printFrame.document).toggle(!settings.hideDueDate);
     // hide/show cr code
-    $(".issue-qr-code", printFrame.document).toggle(!settings.hideQrCode);
+    $(".issue-priority-flag", printFrame.document).toggle(!settings.hidePriorityFlag);
 
     // enable/disable single card page
     $(".card", printFrame.document).css({ 'page-break-after' : '', 'float' : '', 'margin-bottom': '' });
@@ -457,10 +459,10 @@
       return true;
     });
 
-    // show QR Code
+    // show Priority Flag
 
-    result.find("#qr-code-checkbox").click(function() {
-      global.settings.hideQrCode = !this.checked;
+    result.find("#priority-flag-checkbox").click(function() {
+      global.settings.hidePriorityFlag = !this.checked;
       saveSettings();
       redrawCards();
       return true;
