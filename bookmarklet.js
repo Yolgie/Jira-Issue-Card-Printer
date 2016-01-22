@@ -13,7 +13,7 @@
 
   // enforce jQuery
   if (typeof jQuery == 'undefined') {
-    alert("jQuery is required!\n\nPlease create an issue at " + global.issueTrackingUrl);
+    alert("jQuery is required!\n\nMaybe you are not executing this script on Jira?");
     return;
   }
   var $ = jQuery;
