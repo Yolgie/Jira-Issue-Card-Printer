@@ -746,6 +746,10 @@
           }
         }
 
+        if (data.fields.priority) {
+          issueData.priority = data.fields.priority;
+        }
+ 
         if (data.fields.duedate) {
           issueData.dueDate = formatDate(new Date(data.fields.duedate));
         }
