@@ -28,8 +28,6 @@
   function main() {
     var promises = [];
 
-    ga('send', 'pageview');
-
     //preconditions
     if ($("#card-printer-iframe").length > 0) {
       alert("Card Printer already opened!");
@@ -138,7 +136,6 @@
 
   function handleError(error){
     console.log("ERROR " + error.stack);
-    ga('send', 'exception', { 'exDescription': error.message,'exFatal': true });
     alert("Sorry something went wrong.\n\n" + error.message +"\n\nPlease create an issue at " + global.issueTrackingUrl + "\n\n" + error.stack);
   }
 
@@ -169,7 +166,6 @@
   }
 
   function print() {
-    ga('send', 'event', 'button', 'click', 'print', $(".card", global.printFrame.contentWindow.document).length);
     global.printFrame.contentWindow.print();
   }
 
@@ -228,7 +224,6 @@
 
       promises.push(global.appFunctions.getCardData(issueKey).then(function(cardData) {
         console.log("cardData: " + JSON.stringify(cardData,2,2));
-        ga('send', 'event', 'card', 'generate', cardData.type);
         fillCard(card, cardData);
         redrawCards();
       }));
