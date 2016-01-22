@@ -301,7 +301,7 @@
 
     
     //Priority-Flag
-    var priorityFlagUrl = data.fields.priority.iconUrl;
+    var priorityFlagUrl = data.priority.iconUrl;
     card.find(".issue-priority-flag").css("background-image", "url('" + priorityFlagUrl + "')");
 
   }
