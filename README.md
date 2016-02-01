@@ -11,13 +11,16 @@ Just follow the next steps and you are ready to print.
 ### Installation
 #### Drag'n'Drop
 ONLY Chrome and Safari are SUPPORTED!
+
 got to [Instalation Site](https://mrst.github.io/Jira-Issue-Card-Printer/bookmarkInstalation.html)
 
 *or*
 
 #### Manually
 Create Bookmark with folowing content.
-ONLY Chrome and Safari are SUPPORTED!
+
+NOTE THAT ONLY Chrome and Safari are SUPPORTED!
+
 ```
 javascript:(function(){ var script = document.createElement("script"); script.src = "https://mrst.github.io/Jira-Issue-Card-Printer/bookmarklet.js"; document.body.appendChild(script); document.body.removeChild(script);})();
 ```
