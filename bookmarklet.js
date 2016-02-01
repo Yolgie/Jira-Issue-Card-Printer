@@ -155,14 +155,14 @@
   function loadSettings(){
     var settings = global.settings = global.settings || {};
     settings.scale = parseFloat(readCookie("card_printer_scale")) || 0.0;
-    settings.rowCount = parseInt(readCookie("card_printer_row_count")) || 2;
-    settings.colCount = parseInt(readCookie("card_printer_column_count")) || 1;
+    settings.rowCount = parseInt(readCookie("card_printer_row_count")) || 4;
+    settings.colCount = parseInt(readCookie("card_printer_column_count")) || 2;
 
-    settings.singleCardPage = parseBool(readCookie("card_printer_single_card_page"), true );
-    settings.hideDescription = parseBool(readCookie("card_printer_hide_description"), false);
-    settings.hideAssignee = parseBool(readCookie("card_printer_hide_assignee"), false);
-    settings.hideDueDate = parseBool(readCookie("card_printer_hide_due_date"), false);
-    settings.hideQrCode = parseBool(readCookie("card_printer_hide_priority_flag"), false);
+    settings.singleCardPage = parseBool(readCookie("card_printer_single_card_page"), false);
+    settings.hideDescription = parseBool(readCookie("card_printer_hide_description"), true);
+    settings.hideAssignee = parseBool(readCookie("card_printer_hide_assignee"), true);
+    settings.hideDueDate = parseBool(readCookie("card_printer_hide_due_date"), true);
+    settings.hidePriorityFlag = parseBool(readCookie("card_printer_hide_priority_flag"), false);
   }
 
   function print() {

@@ -1,22 +1,26 @@
 # Jira-Issue-Card-Printer
 Beautiful Jira Issue Card Printer
 
-I've written a little bookmarklet for converting Jira issues in a pretty card layout for printing.
+This little bookmarklet converts Jira issues in a pretty card layout for printing.
 
-So long
-Bengt
+Just follow the next steps and you are ready to print.
 
 ### Card Layout
 ![Card Layout](CardExample.png)
 
 ### Installation
 #### Drag'n'Drop
+ONLY Chrome and Safari are SUPPORTED!
+
 got to [Instalation Site](https://mrst.github.io/Jira-Issue-Card-Printer/bookmarkInstalation.html)
 
 *or*
 
 #### Manually
 Create Bookmark with folowing content.
+
+NOTE THAT ONLY Chrome and Safari are SUPPORTED!
+
 ```
 javascript:(function(){ var script = document.createElement("script"); script.src = "https://mrst.github.io/Jira-Issue-Card-Printer/bookmarklet.js"; document.body.appendChild(script); document.body.removeChild(script);})();
 ```
@@ -39,7 +43,4 @@ search for issues und select *List View*
 
 #### Issue tracker
 * **Jira**
-* **Trello**
-* **PivotTracker**
-* **YouTrack**
 
