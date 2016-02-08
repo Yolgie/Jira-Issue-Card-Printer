@@ -14,9 +14,7 @@
       .wrap {
         position: absolute;
         top: 50%;
-        left: 50%;
-        margin-top: -86px;
-        margin-left: -89px;
+        width: 99%;
         text-align: center;
       }
 
@@ -51,7 +49,8 @@
   </head>
   <body>
     <div class="wrap">
-      <h1>Just Drag'n'Drop the button into your Bookmarks and click it on JIRA after selecting issues or on a singe issue page.</h1>
+      <h1>Just Drag'n'Drop the button into your Bookmarks<br />and click it on JIRA after selecting issues or on a singe issue page.</h1>
+      <h2>Please note that Firefox and IE are not supported!</h2>
       <a class="button" href="javascript:(function(){ var script = document.createElement(&quot;script&quot;); script.src = &quot;https://mrst.github.io/Jira-Issue-Card-Printer/bookmarklet.js&quot;; document.body.appendChild(script); document.body.removeChild(script);})();">CardPrinter</a>
     </div>
   </body>
