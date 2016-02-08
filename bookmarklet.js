@@ -710,7 +710,7 @@
 
       $.each(issueKeyList, function(index, value) {
         module.getIssueData(value).then(function(data) {
-          if(data.subtasks !== undefined ) && (settings.loadSubtasks == true)) {
+          if((data.subtasks !== undefined ) && (settings.loadSubtasks == true)) {
             $.each(data.subtasks, function(key, value) {
               extendedIssueKeyList.push(value.key);
               console.log("subissue added: " + value.key);
