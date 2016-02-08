@@ -660,6 +660,7 @@
 
     module.getSelectedIssueKeyList = function() {
       var settings = global.settings;
+      var issueKeyList = [];
       //Issues
       if (/.*\/issues\/\?jql=.*/g.test(document.URL)) {
         var jql = document.URL.replace(/.*\?jql=(.*)/, '$1');
@@ -675,39 +676,49 @@
           async: false,
           success: function(responseData) {
             console.log("responseData: " + responseData.issues);
-
             $.each(responseData.issues, function(key, value) {
-              if(value.subtasks.length > 0 && (settings.loadSubtasks == true)) {
-                $.each(value.subtasks, function(key, value) {
-                  jqlIssues.push(value.key);
-                })
-                jqlIssues.push(value.key);
-              }
+              jqlIssues.push(value.key);
             });
           },
         });
         console.log("jqlIssues: " + jqlIssues);
-        return jqlIssues;
+        return getSubtasks(issueKeyList);
       }
 
       //Browse
       if (/.*\/browse\/.*/g.test(document.URL)) {
-        return [document.URL.replace(/.*\/browse\/([^?]*).*/, '$1')];
+        return getSubtasks([document.URL.replace(/.*\/browse\/([^?]*).*/, '$1')]);
       }
 
       //Project
       if (/.*\/projects\/.*/g.test(document.URL)) {
-        return [document.URL.replace(/.*\/projects\/[^\/]*\/[^\/]*\/([^?]*).*/, '$1')];
+        return getSubtasks([document.URL.replace(/.*\/projects\/[^\/]*\/[^\/]*\/([^?]*).*/, '$1')]);
       }
 
       // RapidBoard
       if (/.*\/secure\/RapidBoard.jspa.*/g.test(document.URL)) {
         return $('div[data-issue-key].ghx-selected').map(function() {
-          return $(this).attr('data-issue-key');
+          return getSubtasks($(this).attr('data-issue-key'));
         });
       }
-
       return [];
+    };
+
+    module.getSubtasks = function(issueKeyList) {
+      var settings = global.settings;
+      var extendedIssueKeyList = issueKeyList;
+
+      $.each(issueKeyList, function(index, value) {
+        module.getIssueData(value).then(function(data) {
+          if(data.subtasks !== undefined ) && (settings.loadSubtasks == true)) {
+            $.each(data.subtasks, function(key, value) {
+              extendedIssueKeyList.push(value.key);
+              console.log("subissue added: " + value.key);
+            })
+          })
+        });
+      }
+      return extendedIssueKeyList;
     };
 
     module.getCardData = function(issueKey) {
