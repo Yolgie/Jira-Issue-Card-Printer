@@ -189,7 +189,7 @@
 
   function renderCards(issueKeyList) {
     var promises = [];
-
+    console.log(issueKeyList);
     var printFrameDocument = global.printFrame.document;
 
     printFrameDocument.open();
