@@ -717,7 +717,7 @@
             })
           }
         });
-      }
+      });
       return extendedIssueKeyList;
     };
 
