@@ -715,7 +715,7 @@
               extendedIssueKeyList.push(value.key);
               console.log("subissue added: " + value.key);
             })
-          })
+          }
         });
       }
       return extendedIssueKeyList;
