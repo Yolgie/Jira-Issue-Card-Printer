@@ -709,9 +709,17 @@
       var settings = global.settings;
       var extendedIssueKeyList = issueKeyList;
 
+      console.log("checking subtasks for "+issueKeyList);
+
       $.each(issueKeyList, function(index, value) {
+        console.log("checking subtask for "+value);
         module.getIssueData(value).then(function(data) {
+          console.log("getting issueData for "+value);
+          console.log("data: " + data);
+          console.log("data.subtasks: " + data.subtasks);
+          console.log("settings.loadSubtasks: " + settings.loadSubtasks);
           if((data.subtasks !== undefined ) && (settings.loadSubtasks == true)) {
+            console.log("data.subtasks is true && settings.loadSubtasks as well");
             $.each(data.subtasks, function(key, value) {
               extendedIssueKeyList.push(value.key);
               console.log("subissue added: " + value.key);
