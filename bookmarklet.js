@@ -708,27 +708,21 @@
     module.getSubtasks = function(issueKeyList) {
       var settings = global.settings;
       var extendedIssueKeyList = issueKeyList;
-
-      console.log("checking subtasks for "+issueKeyList);
+      var promises = [];
 
       $.each(issueKeyList, function(index, value) {
         console.log("checking subtask for "+value);
-        module.getIssueData(value).then(function(data) {
-          console.log("getting issueData for "+value);
-          console.log(data);
-          console.log(settings);
-          console.log("data.subtasks: " + data.subtasks);
-          console.log("settings.loadSubtasks: " + settings.loadSubtasks);
-          if((data.subtasks !== undefined ) && (settings.loadSubtasks == true)) {
+        promises.push(module.getIssueData(value).then(function(data) {
+          if((data.fields.subtasks !== undefined ) && (settings.loadSubtasks == true)) {
             console.log("data.subtasks is true && settings.loadSubtasks as well");
-            $.each(data.subtasks, function(key, value) {
+            $.each(data.fields.subtasks, function(key, value) {
               extendedIssueKeyList.push(value.key);
               console.log("subissue added: " + value.key);
             })
           }
-        });
-        return extendedIssueKeyList;
+        }));
       });
+      return Promise.all(promises).then(function(results){return extendedIssueKeyList;});
     };
 
     module.getCardData = function(issueKey) {
