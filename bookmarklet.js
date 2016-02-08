@@ -184,7 +184,7 @@
     $("#assignee-checkbox", appFrameDocument).attr('checked', !settings.hideAssignee );
     $("#due-date-checkbox", appFrameDocument).attr('checked', !settings.hideDueDate );
     $("#priority-flag-checkbox", appFrameDocument).attr('checked', !settings.hidePriorityFlag );
-    $("#load-subtasks-checkbox", appFrameDocument).attr('checked', !settings.loadSubtasks );
+    $("#load-subtasks-checkbox", appFrameDocument).attr('checked', settings.loadSubtasks );
   }
 
   function renderCards(issueKeyList) {
@@ -307,7 +307,7 @@
     // hide/show cr code
     $(".issue-priority-flag", printFrame.document).toggle(!settings.hidePriorityFlag);
     //load subtasks
-    $(".issue-subtasks-flag", printFrame.document).toggle(!settings.loadSubtasks);
+    $(".issue-subtasks-flag", printFrame.document).toggle(settings.loadSubtasks);
   }
 
   function scaleCards() {
@@ -431,7 +431,7 @@
     // load Subtasks
 
     result.find("#load-subtasks-checkbox").click(function() {
-      global.settings.loadSubtasks = !this.checked;
+      global.settings.loadSubtasks = this.checked;
       saveSettings();
       redrawCards();
       return true;
@@ -715,7 +715,8 @@
         console.log("checking subtask for "+value);
         module.getIssueData(value).then(function(data) {
           console.log("getting issueData for "+value);
-          console.log("data: " + data);
+          console.log(data);
+          console.log(settings);
           console.log("data.subtasks: " + data.subtasks);
           console.log("settings.loadSubtasks: " + settings.loadSubtasks);
           if((data.subtasks !== undefined ) && (settings.loadSubtasks == true)) {
@@ -726,8 +727,8 @@
             })
           }
         });
+        return extendedIssueKeyList;
       });
-      return extendedIssueKeyList;
     };
 
     module.getCardData = function(issueKey) {
