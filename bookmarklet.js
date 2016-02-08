@@ -719,7 +719,7 @@
         });
       }
       return extendedIssueKeyList;
-    }
+    };
 
     module.getCardData = function(issueKey) {
       var promises = [];
