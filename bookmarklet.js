@@ -682,24 +682,25 @@
           },
         });
         console.log("jqlIssues: " + jqlIssues);
-        return getSubtasks(issueKeyList);
+        return module.getSubtasks(issueKeyList);
       }
 
       //Browse
       if (/.*\/browse\/.*/g.test(document.URL)) {
-        return getSubtasks([document.URL.replace(/.*\/browse\/([^?]*).*/, '$1')]);
+        return module.getSubtasks([document.URL.replace(/.*\/browse\/([^?]*).*/, '$1')]);
       }
 
       //Project
       if (/.*\/projects\/.*/g.test(document.URL)) {
-        return getSubtasks([document.URL.replace(/.*\/projects\/[^\/]*\/[^\/]*\/([^?]*).*/, '$1')]);
+        return module.getSubtasks([document.URL.replace(/.*\/projects\/[^\/]*\/[^\/]*\/([^?]*).*/, '$1')]);
       }
 
       // RapidBoard
       if (/.*\/secure\/RapidBoard.jspa.*/g.test(document.URL)) {
-        return $('div[data-issue-key].ghx-selected').map(function() {
-          return getSubtasks($(this).attr('data-issue-key'));
+        var keys = $('div[data-issue-key].ghx-selected').map(function() {
+          return $(this).attr('data-issue-key');
         });
+        return module.getSubtasks(keys);
       }
       return [];
     };
