@@ -1,9 +1,4 @@
 (function() {
-  // Public Instances
-  // Jira: https://connect.atlassian.net/browse/NERDS-33286
-  // PivotTracker: https://www.pivotaltracker.com/n/projects/510733
-  // Trello: https://trello.com/b/8zlPSh70/spike
-  // YouTrack: http://mrst.myjetbrains.com/youtrack/dashboard
 
   var global = {};
   global.version = "4.4.0";
@@ -39,17 +34,8 @@
     if ($("meta[name='application-name'][ content='JIRA']").length > 0) {
       console.log("App: " + "Jira");
       global.appFunctions = jiraFunctions;
-    } else if (/.*pivotaltracker.com\/.*/g.test(document.URL)) {
-      console.log("App: " + "PivotalTracker");
-      global.appFunctions = pivotalTrackerFunctions;
-    } else if (/.*trello.com\/.*/g.test(document.URL)) {
-      console.log("App: " + "Trello");
-      global.appFunctions = trelloFunctions;
-    } else if (/.*myjetbrains.com\/youtrack\/.*/g.test(document.URL) || /.*youtrack.jetbrains.com\/.*/g.test(document.URL) ) {
-      console.log("App: " + "YouTrack");
-      global.appFunctions = youTrackFunctions;
     } else {
-      alert("Unsupported app. Please create an issue at " + global.issueTrackingUrl);
+      alert("Unsupported app. Please execute this action on JIRA");
       return;
     }
 
@@ -145,11 +131,11 @@
     writeCookie("card_printer_row_count", settings.rowCount);
     writeCookie("card_printer_column_count", settings.colCount);
 
-    writeCookie("card_printer_single_card_page", settings.singleCardPage);
     writeCookie("card_printer_hide_description", settings.hideDescription);
     writeCookie("card_printer_hide_assignee", settings.hideAssignee);
     writeCookie("card_printer_hide_due_date", settings.hideDueDate);
-    writeCookie("card_printer_hide_priority_flag", settings.hideQrCode);
+    writeCookie("card_printer_hide_priority_flag", settings.hidePriorityFlag);
+    writeCookie("card_printer_load_sub_tasks", settings.loadSubtasks);
   }
 
   function loadSettings(){
@@ -158,11 +144,11 @@
     settings.rowCount = parseInt(readCookie("card_printer_row_count")) || 4;
     settings.colCount = parseInt(readCookie("card_printer_column_count")) || 2;
 
-    settings.singleCardPage = parseBool(readCookie("card_printer_single_card_page"), false);
     settings.hideDescription = parseBool(readCookie("card_printer_hide_description"), true);
     settings.hideAssignee = parseBool(readCookie("card_printer_hide_assignee"), true);
     settings.hideDueDate = parseBool(readCookie("card_printer_hide_due_date"), true);
     settings.hidePriorityFlag = parseBool(readCookie("card_printer_hide_priority_flag"), false);
+    settings.loadSubtasks = parseBool(readCookie("card_printer_load_sub_tasks"), true);
   }
 
   function print() {
@@ -194,11 +180,11 @@
     $("#rowCount", appFrameDocument).val(settings.rowCount);
     $("#columnCount", appFrameDocument).val(settings.colCount);
 
-    $("#single-card-page-checkbox", appFrameDocument).attr('checked', settings.singleCardPage );
     $("#description-checkbox", appFrameDocument).attr('checked', !settings.hideDescription );
     $("#assignee-checkbox", appFrameDocument).attr('checked', !settings.hideAssignee );
     $("#due-date-checkbox", appFrameDocument).attr('checked', !settings.hideDueDate );
     $("#priority-flag-checkbox", appFrameDocument).attr('checked', !settings.hidePriorityFlag );
+    $("#load-subtasks-checkbox", appFrameDocument).attr('checked', !settings.loadSubtasks );
   }
 
   function renderCards(issueKeyList) {
@@ -301,9 +287,11 @@
 
     
     //Priority-Flag
-    var priorityFlagUrl = data.priority.iconUrl;
-    card.find(".issue-priority-flag").css("background-image", "url('" + priorityFlagUrl + "')");
-
+    if (data.priority) {
+      card.find(".issue-priority-flag").css("background-image", "url('" + data.priority.iconUrl + "')");
+    } else {
+      card.find(".issue-priority-flag").remove();
+    }
   }
 
   function styleCards() {
@@ -318,18 +306,8 @@
     $(".issue-due-box", printFrame.document).toggle(!settings.hideDueDate);
     // hide/show cr code
     $(".issue-priority-flag", printFrame.document).toggle(!settings.hidePriorityFlag);
-
-    // enable/disable single card page
-    $(".card", printFrame.document).css({ 'page-break-after' : '', 'float' : '', 'margin-bottom': '' });
-    if (settings.singleCardPage) {
-      $(".card", printFrame.document).css({ 'page-break-after': 'always', 'float': 'none', 'margin-bottom': '20px' });
-    } else {
-      $(".card", printFrame.document).each(function(index, element){
-        if(index % (settings.colCount * settings.rowCount ) >= (settings.colCount * (settings.rowCount - 1))){
-          $(element).css({ 'margin-bottom': '20px' });
-        }
-      });
-    }
+    //load subtasks
+    $(".issue-subtasks-flag", printFrame.document).toggle(!settings.loadSubtasks);
   }
 
   function scaleCards() {
@@ -423,15 +401,6 @@
       return false;
     });
 
-    // enable single card page
-
-    result.find("#single-card-page-checkbox").click(function() {
-      global.settings.singleCardPage = this.checked;
-      saveSettings();
-      redrawCards();
-      return true;
-    });
-
     // hide description
 
     result.find("#description-checkbox").click(function() {
@@ -454,6 +423,15 @@
 
     result.find("#due-date-checkbox").click(function() {
       global.settings.hideDueDate = !this.checked;
+      saveSettings();
+      redrawCards();
+      return true;
+    });
+
+    // load Subtasks
+
+    result.find("#load-subtasks-checkbox").click(function() {
+      global.settings.loadSubtasks = !this.checked;
       saveSettings();
       redrawCards();
       return true;
@@ -681,7 +659,7 @@
   var jiraFunctions = (function(module) {
 
     module.getSelectedIssueKeyList = function() {
-
+      var settings = global.settings;
       //Issues
       if (/.*\/issues\/\?jql=.*/g.test(document.URL)) {
         var jql = document.URL.replace(/.*\?jql=(.*)/, '$1');
@@ -699,7 +677,12 @@
             console.log("responseData: " + responseData.issues);
 
             $.each(responseData.issues, function(key, value) {
+              if(value.subtasks.length > 0 && (settings.loadSubtasks == true)) {
+                $.each(value.subtasks, function(key, value) {
+                  jqlIssues.push(value.key);
+                })
                 jqlIssues.push(value.key);
+              }
             });
           },
         });
@@ -811,173 +794,4 @@
     return module;
   }({}));
 
-  var youTrackFunctions = (function(module) {
-
-    module.getSelectedIssueKeyList = function() {
-      //Detail View
-      if (/.*\/issue\/.*/g.test(document.URL)) {
-        return [document.URL.replace(/.*\/issue\/([^?]*).*/, '$1')];
-      }
-
-      // Agile Board
-      if (/.*\/rest\/agile.*/g.test(document.URL)) {
-        return $('div.sb-task-focused').map(function() {
-          return $(this).attr('id');
-        });
-      }
-
-      return [];
-    };
-
-    module.getCardData = function(issueKey) {
-      var promises = [];
-      var issueData = {};
-
-      promises.push(module.getIssueData(issueKey).then(function(data) {
-        issueData.key = data.id;
-        issueData.type = data.field.type[0];
-        issueData.summary = data.field.summary;
-        issueData.description = data.field.description;
-
-        if (data.field.assignee) {
-          issueData.assignee = data.field.assignee[0].fullName;
-        }
-
-        if (data.field.attachments) {
-          issueData.hasAttachment = data.field.attachments.length > 0;
-        }
-
-        issueData.url = window.location.origin + "/youtrack/issue/" + issueData.key;
-
-
-      }));
-
-      return Promise.all(promises).then(function(results){return issueData;});
-    };
-
-    module.getIssueData = function(issueKey) {
-      var url = '/youtrack/rest/issue/' + issueKey + '?';
-      console.log("IssueUrl: " + url);
-      //console.log("Issue: " + issueKey + " Loading...");
-      return httpGetJSON(url).then(function(responseData) {
-        //console.log("Issue: " + issueKey + " Loaded!");
-        $.each(responseData.field, function(key, value) {
-          // add fields with field names
-          var fieldName = value.name.toCamelCase();
-          //console.log("add new field: " + newFieldId + " with value from " + fieldName);
-          responseData.field[fieldName] = value.value;
-        });
-        return responseData;
-      });
-    };
-
-    return module;
-  }({}));
-
-  var pivotalTrackerFunctions = (function(module) {
-
-    module.getSelectedIssueKeyList = function() {
-      //Single Story
-      if (/.*\/stories\/.*/g.test(document.URL)) {
-        return [document.URL.replace(/.*\/stories\/([^?]*).*/, '$1')];
-      }
-
-      // Board
-      if (/.*\/projects\/.*/g.test(document.URL)) {
-        return $('.story[data-id]:has(.selected)').map(function() {
-          return $(this).attr('data-id');
-        });
-      }
-
-      return [];
-    };
-
-    module.getCardData = function(issueKey) {
-      var promises = [];
-      var issueData = {};
-
-      promises.push(module.getIssueData(issueKey).then(function(data) {
-        issueData.key = data.id;
-        issueData.type = data.kind.toLowerCase();
-        issueData.summary = data.name;
-        issueData.description = data.description;
-
-        if (data.owned_by && data.owned_by.length > 0) {
-          issueData.assignee = data.owner_ids[0].name;
-        }
-
-        if (data.deadline) {
-          issueData.dueDate = formatDate(new Date(data.deadline));
-        }
-
-        // TODO
-        issueData.hasAttachment = false;
-        issueData.storyPoints = data.estimate;
-
-        issueData.url = data.url;
-      }));
-
-      return Promise.all(promises).then(function(results){return issueData;});
-    };
-
-    module.getIssueData = function(issueKey) {
-      //http://www.pivotaltracker.com/help/api
-      var url = 'https://www.pivotaltracker.com/services/v5/stories/' + issueKey + "?fields=name,kind,description,story_type,owned_by(name),comments(file_attachments(kind)),estimate,deadline";
-      console.log("IssueUrl: " + url);
-      //console.log("Issue: " + issueKey + " Loading...");
-      return httpGetJSON(url);
-    };
-
-    return module;
-  }({}));
-
-  var trelloFunctions = (function(module) {
-
-    module.getSelectedIssueKeyList = function() {
-      //Card View
-      if (/.*\/c\/.*/g.test(document.URL)) {
-        return [document.URL.replace(/.*\/c\/([^/]*).*/g, '$1')];
-      }
-
-      return [];
-    };
-
-    module.getCardData = function(issueKey, callback) {
-      var promises = [];
-      var issueData = {};
-
-      promises.push(module.getIssueData(issueKey).then(function(data) {
-        issueData.key = data.idShort;
-
-        //  TODO get kind from label name
-        // issueData.type = data.kind.toLowerCase();
-
-        issueData.summary = data.name;
-        issueData.description = data.desc;
-
-        if (data.members && data.members.length > 0) {
-          issueData.assignee = data.members[0].fullName;
-          issueData.avatarUrl = "https://trello-avatars.s3.amazonaws.com/" + data.members[0].avatarHash + "/170.png";
-        }
-
-        if (data.due) {
-          issueData.dueDate = formatDate(new Date(data.due));
-        }
-
-        issueData.hasAttachment = data.attachments > 0;
-        issueData.url = data.shortUrl;
-      }));
-
-      return Promise.all(promises).then(function(results){return issueData;});
-    };
-
-    module.getIssueData = function(issueKey) {
-      var url = "https://trello.com/1/cards/" + issueKey + "?members=true";
-      console.log("IssueUrl: " + url);
-      //console.log("Issue: " + issueKey + " Loading...");
-      return httpGetJSON(url);
-    };
-
-    return module;
-  }({}));
 })();
