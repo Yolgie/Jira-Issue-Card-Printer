@@ -710,9 +710,10 @@
       var extendedIssueKeyList = issueKeyList;
       var promises = [];
 
-      $.each(issueKeyList, function(index, value) {
+      promises.push($.each(issueKeyList, function(index, value) {
         console.log("checking subtask for "+value);
         promises.push(module.getIssueData(value).then(function(data) {
+          var promises = [];
           if((data.fields.subtasks !== undefined ) && (settings.loadSubtasks == true)) {
             console.log("data.subtasks is true && settings.loadSubtasks as well");
             $.each(data.fields.subtasks, function(key, value) {
@@ -721,7 +722,8 @@
             })
           }
         }));
-      });
+        return Promise.all(promises);
+      }));
       return Promise.all(promises).then(function(results){return extendedIssueKeyList;});
     };
 
