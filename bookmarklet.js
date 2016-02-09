@@ -67,6 +67,8 @@
 
     // collect selcted issues
     var issueKeyList = global.appFunctions.getSelectedIssueKeyList();
+    console.log("issueKeyList:");
+    console.log(issueKeyList);
     if (issueKeyList.length <= 0) {
       alert("Please select at least one issue.");
       return;
@@ -660,7 +662,7 @@
 
     module.getSelectedIssueKeyList = function() {
       var settings = global.settings;
-      var issueKeyList = [];
+      var keys = null;
       //Issues
       if (/.*\/issues\/\?jql=.*/g.test(document.URL)) {
         var jql = document.URL.replace(/.*\?jql=(.*)/, '$1');
@@ -682,27 +684,29 @@
           },
         });
         console.log("jqlIssues: " + jqlIssues);
-        return module.getSubtasks(issueKeyList);
+        keys = jqlIssues;
       }
 
       //Browse
       if (/.*\/browse\/.*/g.test(document.URL)) {
-        return module.getSubtasks([document.URL.replace(/.*\/browse\/([^?]*).*/, '$1')]);
+        keys = [document.URL.replace(/.*\/browse\/([^?]*).*/, '$1')];
       }
 
       //Project
       if (/.*\/projects\/.*/g.test(document.URL)) {
-        return module.getSubtasks([document.URL.replace(/.*\/projects\/[^\/]*\/[^\/]*\/([^?]*).*/, '$1')]);
+        keys = [document.URL.replace(/.*\/projects\/[^\/]*\/[^\/]*\/([^?]*).*/, '$1')];
       }
 
       // RapidBoard
       if (/.*\/secure\/RapidBoard.jspa.*/g.test(document.URL)) {
-        var keys = $('div[data-issue-key].ghx-selected').map(function() {
+        keys = $('div[data-issue-key].ghx-selected').map(function() {
           return $(this).attr('data-issue-key');
         });
-        return module.getSubtasks(keys);
       }
-      return [];
+
+      return module.getSubtasks(keys).then(function(issueKeyList) {
+        return issueKeyList;
+      })
     };
 
     module.getSubtasks = function(issueKeyList) {
@@ -710,10 +714,9 @@
       var extendedIssueKeyList = issueKeyList;
       var promises = [];
 
-      promises.push($.each(issueKeyList, function(index, value) {
+      $.each(issueKeyList, function(index, value) {
         console.log("checking subtask for "+value);
         promises.push(module.getIssueData(value).then(function(data) {
-          var promises = [];
           if((data.fields.subtasks !== undefined ) && (settings.loadSubtasks == true)) {
             console.log("data.subtasks is true && settings.loadSubtasks as well");
             $.each(data.fields.subtasks, function(key, value) {
@@ -722,9 +725,8 @@
             })
           }
         }));
-        return Promise.all(promises);
-      }));
-      return Promise.all(promises).then(function(results){return extendedIssueKeyList;});
+      });
+      return Promise.all(promises).then(function(results){return results;});
     };
 
     module.getCardData = function(issueKey) {
