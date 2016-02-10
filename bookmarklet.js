@@ -66,7 +66,12 @@
     printFrame.window.matchMedia("print").addListener(redrawCards);
 
     // collect selcted issues
-    var issueKeyList = global.appFunctions.getSelectedIssueKeyList();
+    global.appFunctions.getSelectedIssueKeyList().then(function(issueKeyList) {
+      checkIssueKeys(issueKeyList);
+    });
+  }
+
+  function checkIssueKeys(issueKeyList) {
     console.log("issueKeyList:");
     console.log(issueKeyList);
     if (issueKeyList.length <= 0) {
@@ -78,8 +83,11 @@
         return;
       }
     }
+    fillFrame(issueKeyList);
+  }
 
-    // render cards
+  function fillFrame(issueKeyList) {
+     // render cards
     promises.push(renderCards(issueKeyList));
 
     $("#card-print-dialog-title", global.appFrame.document).text("Card Printer " + global.version + " - Loading issues...");
